@@ -217,10 +217,26 @@ app.get("/product", async (req, res) => {
   res.json(await Product.find());
 });
 
-app.post("/bookings", async (req, res) => {
-  const userData = await getUserDataFromToken(req);
+app.delete('/product/:id', async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
+    if (!product) {
+      return res.status(404).send('Product not found');
+    }
+    res.send('Product deleted successfully');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
 
-  const { product, checkIn, checkOut, name, email, phone, price } =
+app.post("/bookings", async (req, res) => {
+  const { token } = req.cookies;
+  if (!token) {
+    return res.status(401).json({ message: "Please log in to book a product" });
+  }
+  const userData = await getUserDataFromToken(req);
+  const { product, checkIn, checkOut, category, name, email, phone, price } =
     req.body;
   Booking.create({
     product,
@@ -243,9 +259,26 @@ app.post("/bookings", async (req, res) => {
 
 app.get("/bookings", async (req, res) => {
   const userData = await getUserDataFromToken(req);
+  if (!userData) {
+    res.status(401).json({ message: "Please log in to view your bookings." });
+    return;
+  }
   res.json(await Booking.find({ user: userData.id }).populate("product"));
 });
 
+app.delete("/bookings/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const deletedBooking = await Booking.findByIdAndDelete(id);
+    if (!deletedBooking) {
+      return res.status(404).send({ error: "Booking not found" });
+    }
+    res.send({ message: "Booking deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Server error" });
+  }
+});
 
 app.listen(process.env.PORT, () => {
   console.log(` app listening on port ${process.env.PORT}`)

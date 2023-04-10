@@ -16,7 +16,7 @@ const ProductFormPages = () => {
   const [address, setAddress] = useState("");
   const [addedPhotos, setAddedPhotos] = useState([]);
   const [description, setDescription] = useState("");
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState("Mens");
   const [redirect, setRedirect] = useState(false);
   const [price, setPrice] = useState(100);
 
@@ -63,17 +63,43 @@ const ProductFormPages = () => {
       price,
     };
 
-    if (id) {
-      //update
-      await axios.put("/product", {
-        id,
-        ...productData,
-      });
-      setRedirect(true);
+
+    if (!title || !address || !description || category === "" || !price) {
+      if (!title) {
+        alert("Please fill in the title");
+        return;
+      }
+      if (!address) {
+        alert("Please fill in the address");
+        return;
+      }
+      if (!description) {
+        alert("Please fill in the description");
+        return;
+
+      }
+      if (category === "") {
+        alert("Please select a category");
+        return;
+
+      }
+      if (!price) {
+        alert("Please fill in the price");
+        return;
+      }
     } else {
-      //new product
-      await axios.post("/product", productData);
-      setRedirect(true);
+      if (id) {
+        //update
+        await axios.put("/product", {
+          id,
+          ...productData,
+        });
+        setRedirect(true);
+      } else {
+        //new product
+        await axios.post("/product", productData);
+        setRedirect(true);
+      }
     }
   }
 
@@ -88,7 +114,7 @@ const ProductFormPages = () => {
         {preInput("Product Name")}
 
         <input
-        className="border border-gray-400 rounded-md py-2 px-3 w-full text-gray-700 leading-tight focus:outline-none"
+          className="border border-gray-400 rounded-md py-2 px-3 w-full text-gray-700 leading-tight focus:outline-none"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -110,7 +136,7 @@ const ProductFormPages = () => {
 
         {preInput("Category")}
         <select className="border border-gray-400 rounded-md py-2 px-3 w-full text-gray-700 "
-         onChange={(e) => setCategory(e.target.value)}>
+          onChange={(e) => setCategory(e.target.value)}>
           {categories.map((cate) => (
             <option key={cate} value={cate}>
               {cate}
