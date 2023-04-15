@@ -2,9 +2,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
+import HomeSlider from "../Home/components/HomeSlider";
+
+
 const IndexPage = () => {
   const [product, setProduct] = useState([]);
-
+  
   useEffect(() => {
     axios.get("/product").then((response) => {
       setProduct(response.data);
@@ -12,15 +15,18 @@ const IndexPage = () => {
   }, []);
 
   return (
-    <div className="mt-10 mb-10 gap-x-1 gap-y-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 overflow-hidden">
+    <>
+    <HomeSlider/>
+    <h1 className="text-3xl font-medium text-center font-serif">Just For You</h1>
+    <div className="mt-10 mb-10 ml-18 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 overflow-hidden">
       {product.length > 0 &&
-        product.map((product, index) => (
-          <Link to={"/product/" + product._id} key={index}>
-            <div className="p-8 w-96  bg-yellow-100 transition duration-300 ease-in-out hover:scale-105 hover:drop-shadow-2xl hover:rounded-3xl ">
+        product.map((product, pro) => (
+          <Link to={"/product/" + product._id} key={pro}>
+            <div className="p-4 w-80  bg-yellow-100 transition duration-300 ease-in-out hover:scale-105 hover:drop-shadow-2xl hover:rounded-3xl ">
               <div className="flex mb-4">
                 {product.photos?.[0] && (
                   <img
-                    className="rounded-2xl object-cover aspect-square "
+                    className="rounded-2xl object-cover aspect-square"
                     src={"http://localhost:5001/uploads/" + product.photos?.[0]}
                     alt="photo"
                   />
@@ -38,6 +44,7 @@ const IndexPage = () => {
           </Link>
         ))}
     </div>
+    </>
   );
 };
 

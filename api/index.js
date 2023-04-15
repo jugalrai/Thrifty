@@ -10,6 +10,7 @@ const imageDownloader = require("image-downloader");
 const multer = require("multer");
 const fs = require("fs");
 const Booking = require("./models/Booking.js");
+const { log } = require("console");
 require("dotenv").config();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
@@ -40,18 +41,15 @@ function getUserDataFromToken(req) {
   });
 }
 
-app.get("/test", (req, res) => {
-  res.json("test ok");
-});
-
 // register
 app.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, phone, password } = req.body;
 
   try {
     const userDoc = await User.create({
       name,
       email,
+      phone,
       password: bcrypt.hashSync(password, bcryptSalt),
     });
     res.json(userDoc);
@@ -235,9 +233,20 @@ app.post("/bookings", async (req, res) => {
   if (!token) {
     return res.status(401).json({ message: "Please log in to book a product" });
   }
-  const userData = await getUserDataFromToken(req);
+  const userData = await getUserDataFromToken(req); 
   const { product, checkIn, checkOut, category, name, email, phone, price } =
     req.body;
+
+    const existingBooking = await Booking.findOne({ 
+      product, 
+      checkOut: { $gt: new Date(checkIn) }, 
+      checkIn: { $lt: new Date(checkOut) }
+    });
+  
+    if (existingBooking) {
+      return res.status(409).json({ message: "This product has already been booked for the selected dates" });
+    }
+
   Booking.create({
     product,
     checkIn,
@@ -265,6 +274,16 @@ app.get("/bookings", async (req, res) => {
   }
   res.json(await Booking.find({ user: userData.id }).populate("product"));
 });
+
+app.get("/admin", async (req,res) => {
+  try {
+  const bookings = await Booking.find().populate('product').populate('user');
+    res.json(bookings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: 'Server error' });
+  }
+})
 
 app.delete("/bookings/:id", async (req, res) => {
   try {

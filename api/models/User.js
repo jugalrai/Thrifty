@@ -8,6 +8,10 @@ const UserSchema = new Schema({
     minLength: [4, "Name should have more than 4 characters"],
   },
   email: String,
+  phone: {
+    type: String,
+    required: [true, "Please Enter Your Phone Number"],
+  },
   password: {
     type: String,
     required: [true, "Please Enter Your Password"],

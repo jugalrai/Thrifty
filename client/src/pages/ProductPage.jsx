@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import { addDays, differenceInCalendarDays } from "date-fns";
 import { UserContext } from "../UserContext";
 
@@ -11,7 +11,7 @@ const ProductPage = () => {
   let numberOfDays = 0;
   let today = new Date();
   const [checkIn, setCheckIn] = useState(today);
-  const [checkOut, setCheckOut] = useState(addDays(today,1));
+  const [checkOut, setCheckOut] = useState(addDays(today, 1));
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("")
@@ -24,6 +24,7 @@ const ProductPage = () => {
       setName(user.name);
     }
   }, [user]);
+
 
   if (checkIn && checkOut) {
     numberOfDays = differenceInCalendarDays(
@@ -42,6 +43,12 @@ const ProductPage = () => {
 
   async function bookThisProduct(e) {
     e.preventDefault();
+
+    if (!user) {
+      alert("Please log in to book this product.");
+      return;
+    }
+
     const response = await axios.post("/bookings", {
       checkIn,
       checkOut,
@@ -65,10 +72,10 @@ const ProductPage = () => {
     return (
       <div className="absolute inset-0 bg-white min-h-screen">
         <div className="p-8 grid gap-4">
-          <div>
-            <h2 className="text-3xl">Photos of {product.title}</h2>
+          <div className="flex justify-between items-center">
+            <h2 className="text-3xl font-bold">Photos of {product.title}</h2>
             <button
-              className="fixed bottom-10 flex gap-2  py-2 px-4 bg-white rounded-2xl shadow-md shadow-gray-500"
+              className="py-2 px-4 bg-white rounded-2xl shadow-md text-gray-600 font-medium hover:text-gray-800 transition-colors"
               onClick={() => setShowAllPhotos(false)}
             >
               <svg
@@ -89,8 +96,8 @@ const ProductPage = () => {
             </button>
           </div>
           {product?.photos?.length > 0 &&
-            product.photos.map((photo) => (
-              <div>
+            product.photos.map((photo, index) => (
+              <div  key={index}>
                 <img src={"http://localhost:5001/uploads/" + photo} alt="" />
               </div>
             ))}
@@ -101,8 +108,8 @@ const ProductPage = () => {
 
   return (
     <div className="mt-4 bg-gray-100 -mx-8 px-8 py-8">
-      <h1 className="text-3xl">{product.title}</h1>
-      <div className="flex gap-2 my-4">
+      <h1 className="text-3xl font-bold mb-4">{product.title}</h1>
+      <div className="flex items-center mb-6">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -126,24 +133,23 @@ const ProductPage = () => {
         <a
           href={"https://maps.google.com/?q=" + product.address}
           target="_blank"
-          className="block font-semibold underline"
+          className="text-gray-500 hover:text-gray-700 transition-colors"
         >
           {product.address}
         </a>
       </div>
       <div className="relative">
-        <div className="grid gap-2 grid-cols-[4fr_1fr] rounded-2xl overflow-hidden ">
-          <div className="">
-            {product.photos?.[0] && (
-              <div className="">
-                <img
-                  src={"http://localhost:5001/uploads/" + product.photos?.[0]}
-                  alt="photo"
-                  className="aspect-square object-cover w-full h-[600px]"
-                />
-              </div>
-            )}
-          </div>
+        <div className="grid gap-4 grid-cols-1 md:grid-cols-2 rounded-2xl overflow-hidden">
+          {product.photos?.slice(1, 2).map((photo) => (
+            <div className="">
+              <img
+                key={photo}
+                src={`http://localhost:5001/uploads/${photo}`}
+                alt="photo"
+                className="w-full object-cover aspect-h-3 aspect-w-4"
+              />
+            </div>
+          ))}
           <div className="grid">
             {product.photos?.[1] && (
               <img
@@ -193,35 +199,36 @@ const ProductPage = () => {
           </div>
         </div>
         <div>
-          <div className="bg-gray-200 p-4 rounded-2xl shadow">
-            <div className="text-2xl text-center">
+          <div className="bg-gray-100 p-8 rounded-2xl shadow-lg">
+            <div className="text-2xl font-semibold text-center mb-6">
               Price: {product.price} Rs / per day
             </div>
-            <div className="border py-4 px-4 rounded-2xl">
-              <label>Check in:</label> <br />
+            <div className="flex flex-col">
+              <label className="font-semibold ">Check in:</label> <br />
               <input
-                className="p-2 rounded-2xl mt-2"
+                className="border border-gray-300 rounded-lg p-2 mb-5"
                 type="date"
                 value={checkIn}
                 onChange={(e) => setCheckIn(e.target.value)}
-                required
                 min={today.toISOString().slice(0, 10)}
+                required
               />
             </div>
-            <div className="border py-4 px-4 rounded-2xl ">
-              <label>Check out:</label> <br />
+            <div className="flex flex-col ">
+              <label className="font-semibold ">Check out:</label> <br />
               <input
-                className="p-2 rounded-2xl mt-2"
+                className="border border-gray-300 rounded-lg p-2 mb-5"
                 type="date"
                 value={checkOut}
                 onChange={(e) => setCheckOut(e.target.value)}
+                min={checkIn}
                 required
               />
             </div>
             {numberOfDays > 0 && (
               <>
-                <div className="border py-4 px-4 rounded-2xl w-80">
-                  <label>Your full name:</label>
+                <div className="flex flex-col gap-2">
+                  <label className="font-semibold mb-3">Your full name:</label>
                   <input
                     type="text"
                     placeholder="John Rai"
@@ -230,24 +237,27 @@ const ProductPage = () => {
                     required
                   />
                 </div>
-                <div className="border py-4 px-4">
-                  <label>Phone:</label><br/>
+                <div className="flex flex-col ">
+                  <label className="font-semibold">Phone:</label><br />
                   <input
+                    className="border border-gray-300 rounded-lg p-1 mb-4"
                     required
-                    type="phone"
+                    type="tel"
                     value={phone}
-                    pattern="^\98[0-9]{8}$"
+                    pattern="/^(\+977)?98[0-9]{8}$/"
                     onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
               </>
             )}
             {phone &&
-            name &&
-            checkIn.length > 0 &&
-            checkOut.length > 0 ? (
-              <button type="submit" className="primary" onClick={bookThisProduct}>
-                
+              name &&
+              checkIn.length > 0 &&
+              checkOut.length > 0 ? (
+              <button type="submit"
+                className="primary"
+                onClick={bookThisProduct}>
+
                 {numberOfDays > 0 && (
                   <span> Rs {numberOfDays * product.price}</span>
                 )}
@@ -255,11 +265,11 @@ const ProductPage = () => {
             ) : (
               <button
                 type="submit"
-                className="bg-gray-400 p-2 w-full text-white rounded-2xl"
+                className="bg-gray-400 p-2 w-full text-white rounded-2xl cursor-not-allowed"
                 onClick={bookThisProduct}
                 disabled
               >
-                
+
                 {numberOfDays > 0 && (
                   <span> Rs {numberOfDays * product.price}</span>
                 )}

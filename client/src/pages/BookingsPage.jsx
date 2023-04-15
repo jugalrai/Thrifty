@@ -32,37 +32,51 @@ const BookingsPage = () => {
   return (
     <>
       <AccountNav />
-      <div>
-        {bookings?.length > 0 && bookings.map((booking) => (
-          <div className="flex gap-4  bg-yellow-100 rounded-2xl overflow-hidden mb-3 idi2"
-            key={booking._id}>
-            <div className="max-w-xs overflow-hidden py-2 px-2">
-              <ProductImg product={booking.product} />
-            </div>
-            <div className=" grow flex gap-2 flex-col ml-80 mt-14">
-              <h2 className="text-4xl font-bold">{booking.product.title}</h2>
-              <h2 className="mt-2 text-2xl ">{booking.product.category}</h2>
-              <div className=" text-2xl">
-                Date: {format(new Date(booking.checkIn), "dd-MM-yyyy")} until{" "}
-                {format(new Date(booking.checkOut), "dd-MM-yyyy")}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {bookings?.length > 0 ?
+          (bookings.map((booking) => (
+            <div
+              className="border bg-white rounded-lg shadow-lg overflow-hidden"
+              key={booking._id}
+            >
+              <div className="h-48 overflow-hidden">
+                <ProductImg product={booking.product} />
               </div>
-              <div className="mt- text-2xl">
-                {differenceInCalendarDays(
-                  new Date(booking.checkIn),
-                  new Date(booking.checkOut)
-                )}{" "}
-                day | Price: Rs {booking.price}
+              <div className="p-4">
+                <h2 className="text-xl font-bold mb-2">{booking.product.title}</h2>
+                <h2 className="text-lg font-medium mb-2">{booking.product.category}</h2>
+                <div className="text-lg mb-2">
+                  <span className="font-bold">Date:</span>{" "}
+                  {format(new Date(booking.checkIn), "dd-MM-yyyy")} until{" "}
+                  {format(new Date(booking.checkOut), "dd-MM-yyyy")}
+                </div>
+                <div className="text-lg mb-2">
+                  <span className="font-bold">Duration:</span>{" "}
+                  {differenceInCalendarDays(
+                    new Date(booking.checkIn),
+                    new Date(booking.checkOut)
+                  )}{" "}
+                  day
+                </div>
+                <div className="text-lg mb-2">
+                  <span className="font-bold">Price:</span> Rs {booking.price}
+                </div>
+                <div className="flex justify-end">
+                  <button
+                    className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                    onClick={() => deleteBooking(booking._id)}
+                    disabled={loading}
+                  >
+                    {loading ? "Deleting..." : "Cancel Booking"}
+                  </button>
+                </div>
               </div>
-              <button
-                className="ml-80 text-xl bg-red-500 hover:bg-red-600  text-white font-bold w-40 py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                onClick={() => deleteBooking(booking._id)}
-                disabled={loading}
-              >
-                {loading ? "Deleting..." : "Cancel Booking"}
-              </button>
             </div>
-          </div>
-        ))}
+          ))
+          ) : (
+            <div className="flex justify-center items-center h-96">
+              <p className="text-3xl text-gray-500">No bookings found.</p>
+            </div>)}
       </div>
     </>
   );

@@ -1,32 +1,16 @@
-import React, { useState } from "react";
+import React from "react";
 import axios from "axios";
 
 const PhotosUploader = ({ addedPhotos, onChange }) => {
-  const [photoLink, setPhotoLink] = useState("");
-
-  async function addPhotoByLink(e) {
-    e.preventDefault();
-    const { data: filename } = await axios.post("/upload-by-link", {
-      link: photoLink,
-    });
-    onChange((prev) => {
-      return [...prev, filename];
-    });
-
-    setPhotoLink("");
-  }
 
   function uploadPhoto(e) {
     const files = e.target.files;
-
     const data = new FormData();
 
     for (let i = 0; i < files.length; i++) {
       data.append("photos", files[i]);
     }
-
-    axios
-      .post("/upload", data, {
+    axios.post("/upload", data, {
         headers: { "Content-type": "multipart/form-data" },
       })
       .then((response) => {
@@ -54,27 +38,12 @@ const PhotosUploader = ({ addedPhotos, onChange }) => {
 
   return (
     <>
-      {/* <div className="flex gap-2">
-        <input
-          type="text"
-          value={photoLink}
-          onChange={(e) => setPhotoLink(e.target.value)}
-          placeholder="add using a link from web"
-        />
-        <button
-          className="bg-gray-200 px-4 rounded-2xl"
-          onClick={addPhotoByLink}
-        >
-          Add photo
-        </button>
-      </div> */}
-
       <div className="mt-2 gap-2 grid grid-cols-3 lg:grid-cols-6 md:grid-cols-4">
         {addedPhotos.length > 0 &&
           addedPhotos.map((link, index) => (
             <div key={index} className="h-32 flex relative">
               <img
-                src={"http://localhost:50001/uploads/" + link}
+                src={"http://localhost:5001/uploads/" + link}
                 alt="photo"
                 className="rounded-2xl w-full object-cover"
               />

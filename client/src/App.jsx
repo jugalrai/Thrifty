@@ -11,6 +11,7 @@ import ProductPages from "./pages/ProductPages";
 import ProductFormPages from "./pages/ProductFormPages";
 import ProductPage from "./pages/ProductPage";
 import BookingsPage from "./pages/BookingsPage";
+import AdminBookingList from "./pages/admin";
 
 axios.defaults.baseURL = `http://localhost:5001`;
 axios.defaults.withCredentials = true;
@@ -29,6 +30,7 @@ function App() {
           <Route path="/account/product/:id" element={<ProductFormPages />} />
           <Route path="/product/:id" element={<ProductPage />} />
           <Route path="/account/bookings" element={<BookingsPage />} />
+          <Route path="/admin" element={<AdminBookingList/>} />
         </Route>
       </Routes>
     </UserContextProvider>

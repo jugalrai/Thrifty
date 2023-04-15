@@ -11,7 +11,7 @@ const ProductImg = ({ product, index = 0, className = null }) => {
     <img
       src={"http://localhost:5001/uploads/" + product.photos[index]}
       alt="photos"
-      className={className}
+      className="w-full h-full object-cover"
     />
   );
 };

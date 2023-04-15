@@ -28,10 +28,10 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="mt-4 grow flex items-center justify-around">
+    <div className="mt-4 grow flex items-center justify-around min-h-screen">
       <div className="mb-64">
-        <h1 className="text-4xl text-center mb-4">Login</h1>
-        <form className="max-w-md mx-auto" onSubmit={handleLoginSubmit}>
+        <h1 className="text-4xl text-center mb-4 font-mono">Login</h1>
+        <form className="space-y-6 w-56" onSubmit={handleLoginSubmit}>
           <input
             type="email"
             placeholder="your@email.com"
@@ -44,10 +44,10 @@ const LoginPage = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <button className="primary">Login</button>
+          <button className="bg-primary text-white py-2 px-4 rounded-lg hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-dark ml-16">Login</button>
           <div className="text-center py-2 text-gray-500">
-            Dont have an account yet?{" "}
-            <Link className="underline text-black" to={"/register"}>
+            Don't have an account yet?{" "}
+            <Link className="underline text-black font-sans" to={"/register"}>
               Register now
             </Link>
           </div>
