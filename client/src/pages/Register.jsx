@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [redirect, setRedirect] = useState(false);
+
 
   async function registerUser(e) {
     e.preventDefault();
@@ -14,12 +18,22 @@ const RegisterPage = () => {
       await axios.post("/register", {
         name,
         email,
-        phone,
         password,
       });
-      alert("Registration completed. Now you can log in.");
-    } catch (error) {
-      alert("Registration failed. Please try again.");
+      setRedirect(true);
+      toast.success("Registration completed. Now you can log in.", {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 3000,
+      });
+    }
+    catch (error) {
+      toast.error("Registration failed. Please try again.", {
+        position: toast.POSITION.TOP_CENTER,
+        autoClose: 3000,
+      });
+    }
+    if (redirect) {
+      return <Navigate to={"/login"} />;
     }
   }
 
@@ -33,12 +47,6 @@ const RegisterPage = () => {
             placeholder="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            type="string"
-            placeholder="phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
           />
           <input
             type="email"
@@ -61,6 +69,7 @@ const RegisterPage = () => {
           </div>
         </form>
       </div>
+      <ToastContainer />
     </div>
   );
 };

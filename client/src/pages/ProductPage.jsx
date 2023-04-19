@@ -3,6 +3,10 @@ import React, { useContext, useEffect, useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import { addDays, differenceInCalendarDays } from "date-fns";
 import { UserContext } from "../UserContext";
+import KhaltiCheckout from "khalti-checkout-web";
+import config from "./../Home/components/Khalti/KhaltiConfig";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const ProductPage = () => {
   const { id } = useParams();
@@ -18,6 +22,8 @@ const ProductPage = () => {
   const [redirect, setRedirect] = useState("");
 
   const { user } = useContext(UserContext);
+
+  let checkout = new KhaltiCheckout(config);
 
   useEffect(() => {
     if (user) {
@@ -45,7 +51,7 @@ const ProductPage = () => {
     e.preventDefault();
 
     if (!user) {
-      alert("Please log in to book this product.");
+      toast.error("Please log in to book this product.");
       return;
     }
 
@@ -56,10 +62,16 @@ const ProductPage = () => {
       email,
       phone,
       product: product._id,
-      price: numberOfDays * product.price,
+      price: numberOfDays * product.price * 10,
     });
+
+
+    checkout.show({ amount: numberOfDays * product.price })
     const bookingId = response.data._id;
-    setRedirect(`/account/bookings`);
+    // setRedirect(`/user/bookings`);
+    if (localStorage.getItem("paymentDetails")) {
+      setRedirect(`/user/bookings`);
+    }
   }
 
   if (redirect) {
@@ -97,7 +109,7 @@ const ProductPage = () => {
           </div>
           {product?.photos?.length > 0 &&
             product.photos.map((photo, index) => (
-              <div  key={index}>
+              <div key={index}>
                 <img src={"http://localhost:5001/uploads/" + photo} alt="" />
               </div>
             ))}
@@ -225,57 +237,54 @@ const ProductPage = () => {
                 required
               />
             </div>
-            {numberOfDays > 0 && (
-              <>
-                <div className="flex flex-col gap-2">
-                  <label className="font-semibold mb-3">Your full name:</label>
-                  <input
-                    type="text"
-                    placeholder="John Rai"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="flex flex-col ">
-                  <label className="font-semibold">Phone:</label><br />
-                  <input
-                    className="border border-gray-300 rounded-lg p-1 mb-4"
-                    required
-                    type="tel"
-                    value={phone}
-                    pattern="/^(\+977)?98[0-9]{8}$/"
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </div>
-              </>
-            )}
+            {numberOfDays > 0 &&
+              (
+                <>
+                  <div className="flex flex-col gap-2">
+                    <label className="font-semibold mb-3">Your full name:</label>
+                    <input
+                      type="text"
+                      placeholder="John Rai"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col ">
+                    <label className="font-semibold">Phone:</label><br />
+                    <input
+                      className="border border-gray-300 rounded-lg p-1 mb-4"
+                      type="tel"
+                      value={phone}
+                      placeholder="9829562154"
+                      onChange={(e) => setPhone(e.target.value)}
+                      required
+                    />
+                  </div>
+                </>
+              )}
             {phone &&
               name &&
               checkIn.length > 0 &&
               checkOut.length > 0 ? (
-              <button type="submit"
-                className="primary"
-                onClick={bookThisProduct}>
+                <button type="submit"
+                  className="bg-purple-700 p-2 w-full text-white rounded-2xl"
+                  onClick={bookThisProduct}>
 
-                {numberOfDays > 0 && (
-                  <span> Rs {numberOfDays * product.price}</span>
-                )}
-              </button>
-            ) : (
-              <button
-                type="submit"
-                className="bg-gray-400 p-2 w-full text-white rounded-2xl cursor-not-allowed"
-                onClick={bookThisProduct}
-                disabled
-              >
-
-                {numberOfDays > 0 && (
-                  <span> Rs {numberOfDays * product.price}</span>
-                )}
-              </button>
-            )}
+                  {numberOfDays > 0 && (
+                    <span> Rs {numberOfDays * product.price}</span>
+                  )}
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="bg-purple-700 p-2 w-full text-white rounded-2xl cursor-not-allowed"
+                  onClick={bookThisProduct}>
+                  {numberOfDays > 0 && (<span> Rs {numberOfDays * product.price}</span>)}
+                </button>
+              )}
           </div>
+          <ToastContainer />
         </div>
       </form>
     </div>

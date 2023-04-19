@@ -10,7 +10,6 @@ const imageDownloader = require("image-downloader");
 const multer = require("multer");
 const fs = require("fs");
 const Booking = require("./models/Booking.js");
-const { log } = require("console");
 require("dotenv").config();
 
 const bcryptSalt = bcrypt.genSaltSync(10);
@@ -43,13 +42,12 @@ function getUserDataFromToken(req) {
 
 // register
 app.post("/register", async (req, res) => {
-  const { name, email, phone, password } = req.body;
+  const { name, email, password } = req.body;
 
   try {
     const userDoc = await User.create({
       name,
       email,
-      phone,
       password: bcrypt.hashSync(password, bcryptSalt),
     });
     res.json(userDoc);
@@ -102,17 +100,8 @@ app.get("/profile", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.cookie("token", "").json(true);
-});
-
-app.post("/upload-by-link", async (req, res) => {
-  const { link } = req.body;
-  const newName = "photo" + Date.now() + ".jpg";
-  await imageDownloader.image({
-    url: link,
-    dest: __dirname + "/uploads/" + newName,
-  });
-  res.json(newName);
+  res.cookie("token", "",{ sameSite: "none", secure: true }).json(true);
+  res.json("logged out");
 });
 
 const photosMiddleware = multer({ dest: "uploads/" });
@@ -173,42 +162,6 @@ app.get("/user-product", (req, res) => {
 app.get("/product/:id", async (req, res) => {
   const { id } = req.params;
   res.json(await Product.findById(id));
-});
-
-app.put("/product", async (req, res) => {
-  const { token } = req.cookies;
-
-  const {
-    id,
-    title,
-    address,
-    addedPhotos,
-    catgeory,
-    description,
-    checkIn,
-    checkOut,
-    price,
-  } = req.body;
-
-  jwt.verify(token, jwtSecret, {}, async (err, userData) => {
-    if (err) throw err;
-    const productDoc = await Product.findById(id);
-
-    if (userData.id === productDoc.owner.toString()) {
-      productDoc.set({
-        title,
-        address,
-        photos: addedPhotos,
-        category,
-        description,
-        checkIn,
-        checkOut,
-        price,
-      });
-      await productDoc.save();
-      res.json("ok");
-    }
-  });
 });
 
 app.get("/product", async (req, res) => {

@@ -62,6 +62,7 @@ function AdminBookingList() {
                                 </div>
                             </div>
                         </div>
+                        
                     ))
                     ) : (
                         <div className="flex justify-center items-center h-96">

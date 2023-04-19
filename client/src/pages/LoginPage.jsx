@@ -2,6 +2,8 @@ import { Link, Navigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import axios from "axios";
 import { UserContext } from "../UserContext";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -15,11 +17,11 @@ const LoginPage = () => {
 
     try {
       const { data } = await axios.post("/login", { email, password });
-      setUser(data);
-      alert("Login successful");
       setRedirect(true);
+      setUser(data);
+      toast.success("Login successful");      
     } catch (error) {
-      alert("Login failed");
+      toast.error("Login failed");
     }
   }
 
@@ -52,6 +54,7 @@ const LoginPage = () => {
             </Link>
           </div>
         </form>
+        <ToastContainer />
       </div>
     </div>
   );

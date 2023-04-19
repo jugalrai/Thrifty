@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import React, { useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { UserContext } from "./UserContext";
 
@@ -8,7 +8,7 @@ const Header = () => {
   return (
     <header className="flex justify-between">
       {/* LOGO */}
-      <Link to={"/"} className="flex items-center gap-1">
+      <Link to={"/"} className="flex items-center gap-1 hover:underline">
         <svg xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
@@ -24,7 +24,8 @@ const Header = () => {
 
       {/* SEARCH   */}
       <div className="flex gap-2 border border-gray-300 rounded-full py-2 px-4 shadow-md shadow-gray-200 hidden sm:flex">
-        <div>Search </div>
+        <a href="/Search"
+        className="font-bold">Search</a> 
         <button className="bg-primary text-white p-1 rounded-full">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -46,8 +47,8 @@ const Header = () => {
 
       {/* USER LOGIN */}
       <Link
-        to={user ? "/account" : "/login"}
-        className="flex items-center gap-2 border border-gray-300 rounded-full py-2 px-4"
+        to={user ? "/user" : "/login"}
+        className="hover:underline flex items-center gap-2 border border-gray-300 rounded-full py-2 px-4"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -55,7 +56,7 @@ const Header = () => {
           viewBox="0 0 24 24"
           strokeWidth={1.5}
           stroke="currentColor"
-          className="w-6 h-6"
+          className="w-6 h-6 "
         >
           <path
             strokeLinecap="round"

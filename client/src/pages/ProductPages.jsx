@@ -38,7 +38,7 @@ const ProductPages = () => {
         <br />
         <Link
           className="inline-flex gap-1 bg-primary text-white py-2 px-6 rounded-full"
-          to={"/account/product/new"}>
+          to={"/user/product/new"}>
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"

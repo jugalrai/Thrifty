@@ -8,6 +8,7 @@
 .swiper-slide {
     text-align: center;
     font-size: 18px;
+    height:290px;
 
     display: flex;
     justify-content: center;

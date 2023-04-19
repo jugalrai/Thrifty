@@ -3,12 +3,10 @@ import PhotosUploader from "../PhotosUploader";
 import AccountNav from "./AccountNav";
 import { Navigate, useParams } from "react-router-dom";
 import axios from "axios";
+import { ToastContainer,toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const categories = [
-  "Mens",
-  "Female",
-  "Kids"
-]
+const categories = ["Mens","Female","Kids"]
 
 const ProductFormPages = () => {
   const { id } = useParams();
@@ -62,29 +60,26 @@ const ProductFormPages = () => {
       category,
       price,
     };
-
-
+    
     if (!title || !address || !description || category === "" || !price) {
       if (!title) {
-        alert("Please fill in the title");
+        toast.error("Please fill in the title");
         return;
       }
       if (!address) {
-        alert("Please fill in the address");
+        toast.error("Please fill in the address");
         return;
       }
       if (!description) {
-        alert("Please fill in the description");
+        toast.error("Please fill in the description");
         return;
-
       }
       if (category === "") {
-        alert("Please select a category");
+        toast.error("Please select a category");
         return;
-
       }
       if (!price) {
-        alert("Please fill in the price");
+        toast.error("Please fill in the price");
         return;
       }
     } else {
@@ -100,11 +95,12 @@ const ProductFormPages = () => {
         await axios.post("/product", productData);
         setRedirect(true);
       }
+      toast.success("Product saved successfully!");
     }
   }
-
+   
   if (redirect) {
-    return <Navigate to={"/account/product"} />;
+    return <Navigate to={"/user/product"} />;
   }
 
   return (
@@ -161,6 +157,7 @@ const ProductFormPages = () => {
 
         <button className="primary my-4">Save</button>
       </form>
+      <ToastContainer/>
     </div>
   );
 };

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import ProductImg from "../ProductImg";
 import AccountNav from "./AccountNav";
 
+
 const BookingsPage = () => {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ const BookingsPage = () => {
   const deleteBooking = async (bookingId) => {
     setLoading(true);
     try {
-      const confirmed = window.confirm("Are you sure you want to cancel this booking?");
+      const confirmed = window.confirm("Are you sure you want to remove this booking?");
       if (confirmed) {
         await axios.delete(`/bookings/${bookingId}`);
         setBookings(bookings.filter((booking) => booking._id !== bookingId));
